@@ -46,7 +46,7 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     end)
 
     data = %{"series": list}
-
+    IO.inspect data
     {:ok, body} = Poison.encode data
     body
   end
