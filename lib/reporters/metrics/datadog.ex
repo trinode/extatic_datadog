@@ -1,13 +1,7 @@
 defmodule Extatic.Reporters.Metrics.Datadog do
   @behaviour Extatic.Behaviours.MetricReporter
   def send(stat_list) do
-    IO.puts "-------------------------"
-    IO.puts "DATADOG SENDER:"
-    IO.puts "configuration:"
-    IO.inspect get_config
-    IO.puts "input_stats:"
-    IO.inspect send_request(stat_list)
-    IO.puts "-------------------------"
+    send_request(stat_list)
   end
 
   def get_config do
@@ -17,8 +11,6 @@ defmodule Extatic.Reporters.Metrics.Datadog do
   def build_url(url, api_key) do
     "#{url}?api_key=#{api_key}"
   end
-
-
 
   def send_request(stats) do
     config = get_config
@@ -46,18 +38,16 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     end)
 
     data = %{"series": list}
-    IO.inspect data
     {:ok, body} = Poison.encode data
+
     body
   end
 
   def get_body(stats) do
-
     {:ok, json} = Poison.encode(stats)
+
     json
   end
-
-
 
   def get_time do
     DateTime.utc_now |> DateTime.to_unix

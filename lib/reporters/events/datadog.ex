@@ -1,16 +1,7 @@
 defmodule Extatic.Reporters.Events.Datadog do
   @behaviour Extatic.Behaviours.EventReporter
   def send(state) do
-    IO.puts "-------------------------"
-    IO.puts "DATADOG EVENT SENDER:"
-    IO.puts "configuration:"
-    IO.inspect get_config
-
-    IO.puts "input"
-    IO.inspect state.events
-
     send_requests(state.events)
-    IO.puts "-------------------------"
   end
 
   def get_config do
@@ -21,27 +12,19 @@ defmodule Extatic.Reporters.Events.Datadog do
     "#{url}?api_key=#{api_key}"
   end
 
-
-
   def send_requests([current_event | tail]) do
     config = get_config
 
     url = build_url(config.url,config.api_key)
     body = build_request(current_event, config)
     headers = ["Content-Type": "application/json"]
-    IO.puts "url"
-    IO.inspect url
-    IO.puts "body"
-    IO.inspect body
-    IO.puts "headers"
-    IO.inspect headers
+
     HTTPoison.post url, body, headers
+
     send_requests(tail)
   end
 
-  def send_requests([]) do
-
-  end
+  def send_requests([]), do: nil
 
   def build_request(event, config) do
     now = get_time
