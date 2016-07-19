@@ -11,7 +11,7 @@ defmodule Extatic.Reporters.Metrics.Datadog do
   end
 
   def get_config do
-    Application.get_env(:extatic, :config) |> Keyword.get(:metric_config)
+    config |> Keyword.get(:metric_config)
   end
 
   def build_url(url, api_key) do
@@ -26,7 +26,7 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     url = build_url(config.url,config.api_key)
     body = build_request(stats, config)
     headers = ["Content-Type": "application/json"]
-    HTTPoison.post url, body, headers
+    HTTPoison.post url, body, headers, options
   end
 
   def build_request(stats, config) do
@@ -61,5 +61,16 @@ defmodule Extatic.Reporters.Metrics.Datadog do
 
   def get_time do
     DateTime.utc_now |> DateTime.to_unix
+  end
+
+  defp options do
+    [
+      proxy: "http://#{System.get_env("WEB_PROXY_HOST")}:#{System.get_env("WEB_PROXY_PORT")}",
+      proxy_auth: {System.get_env("WEB_PROXY_USER"), System.get_env("WEB_PROXY_PASS")}
+    ]
+  end
+
+  defp config do
+    Application.get_env(:extatic, :config)
   end
 end
