@@ -14,7 +14,7 @@ defmodule Extatic.Reporters.Events.Datadog do
   end
 
   def get_config do
-    Application.get_env(:extatic, :config) |> Keyword.get(:event_config)
+    config |> Keyword.get(:event_config)
   end
 
   def build_url(url, api_key) do
@@ -35,7 +35,7 @@ defmodule Extatic.Reporters.Events.Datadog do
     IO.inspect body
     IO.puts "headers"
     IO.inspect headers
-    HTTPoison.post url, body, headers
+    HTTPoison.post url, body, headers, options
     send_requests(tail)
   end
 
@@ -62,5 +62,23 @@ defmodule Extatic.Reporters.Events.Datadog do
 
   def get_time do
     DateTime.utc_now |> DateTime.to_unix
+  end
+
+  defp options do
+    [
+      proxy: "http://#{Keyword.fetch!(proxy_config, :host)}:#{Keyword.fetch!(proxy_config, :port)}",
+      proxy_auth: {
+        Keyword.fetch!(proxy_config, :username),
+        Keyword.fetch!(proxy_config, :password)
+      }
+    ]
+  end
+
+  defp proxy_config do
+    Keyword.fetch!(config, :proxy)
+  end
+
+  defp config do
+    Application.fetch_env!(:extatic, :config)
   end
 end
