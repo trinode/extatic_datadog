@@ -1,6 +1,6 @@
 defmodule Extatic.Reporters.Availability.Datadog do
   @behaviour Extatic.Behaviours.AvailabilityReporter
-  def send do
+  def send(_state) do
     send_request
   end
 
