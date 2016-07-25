@@ -66,8 +66,15 @@ defmodule Extatic.Reporters.Metrics.Datadog do
   defp options do
     [
       proxy: "http://#{System.get_env("WEB_PROXY_HOST")}:#{System.get_env("WEB_PROXY_PORT")}",
-      proxy_auth: {System.get_env("WEB_PROXY_USER"), System.get_env("WEB_PROXY_PASS")}
+      proxy_auth: {
+        Keyword.fetch!(proxy_config, :username),
+        Keyword.fetch!(proxy_config, :password)
+      }
     ]
+  end
+
+  defp proxy_config do
+    Keyword.fetch!(config, :proxy)
   end
 
   defp config do
