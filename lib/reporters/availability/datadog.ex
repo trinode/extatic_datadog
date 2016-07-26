@@ -60,6 +60,10 @@ defmodule Extatic.Reporters.Availability.Datadog do
     ]
   end
 
+  defp options(_) do
+    [] 
+  end
+
   defp proxy_config do
     proxy_config = Keyword.fetch(config, :proxy)
     case proxy_config do
