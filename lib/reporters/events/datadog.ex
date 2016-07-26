@@ -60,7 +60,7 @@ defmodule Extatic.Reporters.Events.Datadog do
   end
 
 
-  defp options(config = %{username: user, passsword: password, host: host, port: port}) do
+  defp options(config = %{username: username, passsword: password, host: host, port: port}) do
     [
       proxy: "http://#{host}:#{port}",
       proxy_auth: {
@@ -87,7 +87,7 @@ defmodule Extatic.Reporters.Events.Datadog do
        _ -> %{}
     end
   end
-  
+
   defp config do
     Application.fetch_env!(:extatic, :config)
   end
