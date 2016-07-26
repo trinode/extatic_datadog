@@ -1,16 +1,7 @@
 defmodule Extatic.Reporters.Events.Datadog do
   @behaviour Extatic.Behaviours.EventReporter
   def send(state) do
-    IO.puts "-------------------------"
-    IO.puts "DATADOG EVENT SENDER:"
-    IO.puts "configuration:"
-    IO.inspect get_config
-
-    IO.puts "input"
-    IO.inspect state.events
-
     send_requests(state.events)
-    IO.puts "-------------------------"
   end
 
   def get_config do
@@ -64,20 +55,39 @@ defmodule Extatic.Reporters.Events.Datadog do
     DateTime.utc_now |> DateTime.to_unix
   end
 
-  defp options do
+  defp options() do
+    options(proxy_config)
+  end
+
+
+  defp options(config = %{username: user, passsword: password, host: host, port: port}) do
     [
-      proxy: "http://#{Keyword.fetch!(proxy_config, :host)}:#{Keyword.fetch!(proxy_config, :port)}",
+      proxy: "http://#{host}:#{port}",
       proxy_auth: {
-        Keyword.fetch!(proxy_config, :username),
-        Keyword.fetch!(proxy_config, :password)
+        username,
+        password
       }
     ]
   end
 
-  defp proxy_config do
-    Keyword.fetch!(config, :proxy)
+  defp options(config = %{host: host, port: port}) do
+    [
+      proxy: "http://#{host}:#{port}"
+    ]
   end
 
+  defp options(_) do
+    []
+  end
+
+  defp proxy_config do
+    proxy_config = Keyword.fetch(config, :proxy)
+    case proxy_config do
+       {:ok, config} -> config
+       _ -> %{}
+    end
+  end
+  
   defp config do
     Application.fetch_env!(:extatic, :config)
   end

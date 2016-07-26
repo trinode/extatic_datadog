@@ -63,18 +63,37 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     DateTime.utc_now |> DateTime.to_unix
   end
 
-  defp options do
+  defp options() do
+    options(proxy_config)
+  end
+
+
+  defp options(config = %{username: user, passsword: password, host: host, port: port}) do
     [
-      proxy: "http://#{System.get_env("WEB_PROXY_HOST")}:#{System.get_env("WEB_PROXY_PORT")}",
+      proxy: "http://#{host}:#{port}",
       proxy_auth: {
-        Keyword.fetch!(proxy_config, :username),
-        Keyword.fetch!(proxy_config, :password)
+        username,
+        password
       }
     ]
   end
 
+  defp options(config = %{host: host, port: port}) do
+    [
+      proxy: "http://#{host}:#{port}"
+    ]
+  end
+
+  defp options(_) do
+    []
+  end
+
   defp proxy_config do
-    Keyword.fetch!(config, :proxy)
+    proxy_config = Keyword.fetch(config, :proxy)
+    case proxy_config do
+       {:ok, config} -> config
+       _ -> %{}
+    end
   end
 
   defp config do

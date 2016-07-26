@@ -50,18 +50,24 @@ defmodule Extatic.Reporters.Availability.Datadog do
   end
 
 
-  defp options(config = %{username: user, passsword: password}) do
+  defp options(config = %{username: user, passsword: password, host: host, port: port}) do
     [
-      proxy: "http://#{Keyword.fetch!(config, :host)}:#{Keyword.fetch!(config, :port)}",
+      proxy: "http://#{host}:#{port}",
       proxy_auth: {
-        Map.fetch!(config, :username),
-        Map.fetch!(config, :password)
+        username,
+        password
       }
     ]
   end
 
+  defp options(config = %{host: host, port: port}) do
+    [
+      proxy: "http://#{host}:#{port}"
+    ]
+  end
+
   defp options(_) do
-    [] 
+    []
   end
 
   defp proxy_config do
