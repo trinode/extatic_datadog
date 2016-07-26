@@ -1,13 +1,7 @@
 defmodule Extatic.Reporters.Metrics.Datadog do
   @behaviour Extatic.Behaviours.MetricReporter
   def send(stat_list) do
-    IO.puts "-------------------------"
-    IO.puts "DATADOG SENDER:"
-    IO.puts "configuration:"
-    IO.inspect get_config
-    IO.puts "input_stats:"
-    IO.inspect send_request(stat_list)
-    IO.puts "-------------------------"
+    send_request(stat_list)
   end
 
   def get_config do
@@ -68,7 +62,7 @@ defmodule Extatic.Reporters.Metrics.Datadog do
   end
 
 
-  defp options(config = %{username: user, passsword: password, host: host, port: port}) do
+  defp options(config = %{username: username, passsword: password, host: host, port: port}) do
     [
       proxy: "http://#{host}:#{port}",
       proxy_auth: {
