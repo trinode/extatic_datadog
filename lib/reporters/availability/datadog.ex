@@ -65,7 +65,7 @@ defmodule Extatic.Reporters.Availability.Datadog do
   end
 
   defp proxy_config do
-    Map.fetch!(config, :proxy)
+    Keyword.fetch!(config, :proxy)
   end
 
   defp config do
