@@ -43,18 +43,29 @@ defmodule Extatic.Reporters.Availability.Datadog do
     DateTime.utc_now |> DateTime.to_unix
   end
 
-  defp options do
+
+
+  defp options() do
+    options(proxy_config)
+  end
+
+
+  defp options(config = %{username: user, passsord: password}) do
     [
-      proxy: "http://#{Keyword.fetch!(proxy_config, :host)}:#{Keyword.fetch!(proxy_config, :port)}",
+      proxy: "http://#{Keyword.fetch!(config, :host)}:#{Keyword.fetch!(config, :port)}",
       proxy_auth: {
-        Keyword.fetch!(proxy_config, :username),
-        Keyword.fetch!(proxy_config, :password)
+        Map.fetch!(config, :username),
+        Map.fetch!(config, :password)
       }
     ]
   end
 
+  defp options(config) do
+    []
+  end
+
   defp proxy_config do
-    Keyword.fetch!(config, :proxy)
+    Map.fetch!(config, :proxy)
   end
 
   defp config do
