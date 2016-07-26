@@ -50,7 +50,7 @@ defmodule Extatic.Reporters.Availability.Datadog do
   end
 
 
-  defp options(config = %{username: user, passsord: password}) do
+  defp options(config = %{username: user, passsword: password}) do
     [
       proxy: "http://#{Keyword.fetch!(config, :host)}:#{Keyword.fetch!(config, :port)}",
       proxy_auth: {
@@ -60,13 +60,14 @@ defmodule Extatic.Reporters.Availability.Datadog do
     ]
   end
 
-  defp options(config) do
-    []
+  defp proxy_config do
+    proxy_config = Keyword.fetch(config, :proxy)
+    case proxy_config do
+       {:ok, config} -> config
+       _ -> %{}
+    end
   end
 
-  defp proxy_config do
-    Keyword.fetch!(config, :proxy)
-  end
 
   defp config do
     Application.fetch_env!(:extatic, :config)
