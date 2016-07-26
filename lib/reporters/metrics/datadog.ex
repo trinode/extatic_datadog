@@ -22,7 +22,7 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     url = build_url(config.url,config.api_key)
     body = build_request(stats, config)
     headers = ["Content-Type": "application/json"]
-    HTTPoison.post url, body, headers, options
+    IO.inspect HTTPoison.post(url, body, headers, options)
   end
 
   def build_request(stats, config) do
