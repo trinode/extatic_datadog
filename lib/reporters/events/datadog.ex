@@ -20,7 +20,7 @@ defmodule Extatic.Reporters.Events.Datadog do
     url = build_url(config.url,config.api_key)
     body = build_request(current_event, config)
     headers = ["Content-Type": "application/json"]
-    
+
     HTTPoison.post url, body, headers, options
     send_requests(tail)
   end
@@ -55,7 +55,7 @@ defmodule Extatic.Reporters.Events.Datadog do
   end
 
 
-  defp options(config = %{username: username, passsword: password, host: host, port: port}) do
+  defp options(config = %{username: username, password: password, host: host, port: port}) do
     [
       proxy: "http://#{host}:#{port}",
       proxy_auth: {
