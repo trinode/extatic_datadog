@@ -1,8 +1,6 @@
 defmodule Extatic.Reporters.Metrics.Datadog do
   @behaviour Extatic.Behaviours.MetricReporter
   def send(stat_list) do
-    IO.puts "sending metrics"
-    IO.inspect stat_list
     send_request(stat_list)
   end
 

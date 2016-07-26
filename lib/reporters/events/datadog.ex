@@ -20,12 +20,7 @@ defmodule Extatic.Reporters.Events.Datadog do
     url = build_url(config.url,config.api_key)
     body = build_request(current_event, config)
     headers = ["Content-Type": "application/json"]
-    IO.puts "url"
-    IO.inspect url
-    IO.puts "body"
-    IO.inspect body
-    IO.puts "headers"
-    IO.inspect headers
+    
     HTTPoison.post url, body, headers, options
     send_requests(tail)
   end
