@@ -24,9 +24,7 @@ defmodule Extatic.Reporters.Availability.Datadog do
   end
 
   def build_request(config) do
-    now = get_time
     host = config.host
-    tags = ""
 
     data = %{
               "check": "app.is_ok",
@@ -50,7 +48,7 @@ defmodule Extatic.Reporters.Availability.Datadog do
   end
 
 
-  defp options(config = %{username: username, password: password, host: host, port: port}) do
+  defp options(%{username: username, password: password, host: host, port: port}) do
     [
       proxy: "http://#{host}:#{port}",
       proxy_auth: {
@@ -60,7 +58,7 @@ defmodule Extatic.Reporters.Availability.Datadog do
     ]
   end
 
-  defp options(config = %{host: host, port: port}) do
+  defp options(%{host: host, port: port}) do
     [
       proxy: "http://#{host}:#{port}"
     ]

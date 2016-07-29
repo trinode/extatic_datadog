@@ -30,7 +30,6 @@ defmodule Extatic.Reporters.Events.Datadog do
   end
 
   def build_request(event, config) do
-    now = get_time
     host = config.host
     tags = ""
 
@@ -39,7 +38,8 @@ defmodule Extatic.Reporters.Events.Datadog do
               "text": event.content,
               "title": event.title,
               "alert_type": event.type,
-              "tags": tags
+              "tags": tags,
+              "host": host
             }
 
     {:ok, body} = Poison.encode data
@@ -55,7 +55,7 @@ defmodule Extatic.Reporters.Events.Datadog do
   end
 
 
-  defp options(config = %{username: username, password: password, host: host, port: port}) do
+  defp options(%{username: username, password: password, host: host, port: port}) do
     [
       proxy: "http://#{host}:#{port}",
       proxy_auth: {
@@ -65,7 +65,7 @@ defmodule Extatic.Reporters.Events.Datadog do
     ]
   end
 
-  defp options(config = %{host: host, port: port}) do
+  defp options(%{host: host, port: port}) do
     [
       proxy: "http://#{host}:#{port}"
     ]
