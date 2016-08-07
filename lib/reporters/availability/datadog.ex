@@ -1,26 +1,22 @@
 defmodule Extatic.Reporters.Availability.Datadog do
   @behaviour Extatic.Behaviours.AvailabilityReporter
-  def send(_state) do
-    send_request
+  def send(state) do
+    send_request(state)
   end
 
-  def get_config do
-    config |> Keyword.get(:availability_config)
-  end
 
   def build_url(url, api_key) do
     "#{url}?api_key=#{api_key}"
   end
 
 
-  def send_request() do
-    config = get_config
+  def send_request(state = %{config: config}) do
 
     url = build_url(config.url,config.api_key)
     body = build_request(config)
     headers = ["Content-Type": "application/json"]
 
-    HTTPoison.post url, body, headers, options
+    HTTPoison.post url, body, headers, options(state)
   end
 
   def build_request(config) do
@@ -45,8 +41,8 @@ defmodule Extatic.Reporters.Availability.Datadog do
 
 
 
-  defp options() do
-    options(proxy_config)
+  defp options(state = %{config: config}) do
+    options(proxy_config(state))
   end
 
 
@@ -70,8 +66,8 @@ defmodule Extatic.Reporters.Availability.Datadog do
     []
   end
 
-  defp proxy_config do
-    proxy_config = Keyword.fetch(config, :proxy)
+  defp proxy_config(%{config: config}) do
+    proxy_config = Map.fetch(config, :proxy)
     case proxy_config do
        {:ok, config} -> config
        _ -> %{}

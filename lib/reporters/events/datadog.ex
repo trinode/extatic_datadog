@@ -1,11 +1,7 @@
 defmodule Extatic.Reporters.Events.Datadog do
   @behaviour Extatic.Behaviours.EventReporter
   def send(state) do
-    send_requests(state.events)
-  end
-
-  def get_config do
-    config |> Keyword.get(:event_config)
+    send_requests(state.events, state)
   end
 
   def build_url(url, api_key) do
@@ -14,18 +10,17 @@ defmodule Extatic.Reporters.Events.Datadog do
 
 
 
-  def send_requests([current_event | tail]) do
-    config = get_config
+  def send_requests([current_event | tail], state = %{config: config}) do
 
     url = build_url(config.url,config.api_key)
     body = build_request(current_event, config)
     headers = ["Content-Type": "application/json"]
 
-    HTTPoison.post url, body, headers, options
-    send_requests(tail)
+    HTTPoison.post url, body, headers, options(state)
+    send_requests(tail, state)
   end
 
-  def send_requests([]) do
+  def send_requests([], _state) do
 
   end
 
@@ -50,12 +45,7 @@ defmodule Extatic.Reporters.Events.Datadog do
     DateTime.utc_now |> DateTime.to_unix
   end
 
-  defp options() do
-    options(proxy_config)
-  end
-
-
-  defp options(config = %{username: username, password: password, host: host, port: port}) do
+  defp options(config = %{config: %{username: username, password: password, host: host, port: port}}) do
     [
       proxy: "http://#{host}:#{port}",
       proxy_auth: {
@@ -65,7 +55,7 @@ defmodule Extatic.Reporters.Events.Datadog do
     ]
   end
 
-  defp options(config = %{host: host, port: port}) do
+  defp options(config = %{config: %{host: host, port: port}}) do
     [
       proxy: "http://#{host}:#{port}"
     ]
@@ -75,7 +65,7 @@ defmodule Extatic.Reporters.Events.Datadog do
     []
   end
 
-  defp proxy_config do
+  defp proxy_config(%{config: config}) do
     proxy_config = Keyword.fetch(config, :proxy)
     case proxy_config do
        {:ok, config} -> config
