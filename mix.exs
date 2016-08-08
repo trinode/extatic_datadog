@@ -30,9 +30,11 @@ defmodule ExtaticDatadog.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-    {:httpoison, "~> 0.9.0"},
-     {:poison, "~> 2.0"},
-     {:extatic, "0.1.0"}]
+      {:httpoison, "~> 0.9.0"},
+      {:poison, "~> 2.0"},
+      {:extatic, "0.1.0"},
+      {:bypass, "~> 0.1", only: :test}
+    ]
   end
 
   defp description do

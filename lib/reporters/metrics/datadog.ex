@@ -4,24 +4,20 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     send_request(stat_list)
   end
 
-  def get_config do
-    config |> Keyword.get(:metric_config)
-  end
-
   def build_url(url, api_key) do
     "#{url}?api_key=#{api_key}"
   end
 
 
 
-  def send_request(stats) do
-    config = get_config
-
+  def send_request(state = %{config: config, metrics: metrics}) when length(metrics) > 0 do
     url = build_url(config.url,config.api_key)
-    body = build_request(stats, config)
+    body = build_request(metrics, config)
     headers = ["Content-Type": "application/json"]
-    IO.inspect HTTPoison.post(url, body, headers, options)
+    IO.inspect HTTPoison.post(url, body, headers, options(state))
   end
+
+  def send_request(state), do: nil
 
   def build_request(stats, config) do
     now = get_time
@@ -57,12 +53,9 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     DateTime.utc_now |> DateTime.to_unix
   end
 
-  defp options() do
-    options(proxy_config)
-  end
 
 
-  defp options(config = %{username: username, password: password, host: host, port: port}) do
+  defp options(config = %{config: %{username: username, password: password, host: host, port: port}}) do
     [
       proxy: "http://#{host}:#{port}",
       proxy_auth: {
@@ -72,7 +65,7 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     ]
   end
 
-  defp options(config = %{host: host, port: port}) do
+  defp options(config = %{config: %{host: host, port: port}}) do
     [
       proxy: "http://#{host}:#{port}"
     ]
@@ -82,7 +75,7 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     []
   end
 
-  defp proxy_config do
+  defp proxy_config(%{config: config}) do
     proxy_config = Keyword.fetch(config, :proxy)
     case proxy_config do
        {:ok, config} -> config
@@ -90,7 +83,4 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     end
   end
 
-  defp config do
-    Application.get_env(:extatic, :config)
-  end
 end
