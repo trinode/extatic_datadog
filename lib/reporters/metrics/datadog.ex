@@ -14,7 +14,7 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     url = build_url(config.url,config.api_key)
     body = build_request(metrics, config)
     headers = ["Content-Type": "application/json"]
-    IO.inspect HTTPoison.post(url, body, headers, options(state))
+    HTTPoison.post(url, body, headers, options(state))
   end
 
   def send_request(state), do: nil
@@ -36,7 +36,7 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     end)
 
     data = %{"series": list}
-    IO.inspect data
+    
     {:ok, body} = Poison.encode data
     body
   end
