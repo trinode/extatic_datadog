@@ -1,17 +1,17 @@
 defmodule Extatic.Reporters.Events.Datadog do
   @behaviour Extatic.Behaviours.EventReporter
-  def send(state) do
+
+  def send(state = %{config: config, events: events}) when length(events) > 0 do
     send_requests(state.events, state)
   end
+
+  def send(_), do: nil
 
   def build_url(url, api_key) do
     "#{url}?api_key=#{api_key}"
   end
 
-
-
-  def send_requests([current_event | tail], state = %{config: config}) do
-
+  def send_requests([current_event | tail], state = %{config: config, events: events}) when length(events) > 0 do
     url = build_url(config.url,config.api_key)
     body = build_request(current_event, config)
     headers = ["Content-Type": "application/json"]
@@ -46,7 +46,8 @@ defmodule Extatic.Reporters.Events.Datadog do
   end
 
 
-defp options(config = %{config: %{username: username, password: password, host: host, port: port}}) do
+  defp options(config = %{config: %{username: username, password: password, host: host, port: port}}) do
+
     [
       proxy: "http://#{host}:#{port}",
       proxy_auth: {
