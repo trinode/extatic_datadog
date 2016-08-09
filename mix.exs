@@ -32,7 +32,7 @@ defmodule ExtaticDatadog.Mixfile do
     [
       {:httpoison, "~> 0.9.0"},
       {:poison, "~> 2.0"},
-      {:extatic, "0.1.0"},
+      {:extatic, "0.2.0"},
       {:bypass, "~> 0.1", only: :test}
     ]
   end
