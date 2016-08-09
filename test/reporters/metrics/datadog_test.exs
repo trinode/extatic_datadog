@@ -1,4 +1,4 @@
-defmodule Extatic.Reporters.Events.DatadogTest do
+defmodule Extatic.Reporters.Metrics.DatadogTest do
   use ExUnit.Case, async: true
 
   setup do
@@ -6,11 +6,11 @@ defmodule Extatic.Reporters.Events.DatadogTest do
     {:ok, bypass: bypass}
   end
 
-  test "When there are no events, no request is sent to datadog", %{bypass: bypass} do
-    Extatic.Reporters.Events.Datadog.send(request_state(bypass))
+  test "When there are no metrics, no request is sent to datadog", %{bypass: bypass} do
+    Extatic.Reporters.Metrics.Datadog.send(request_state(bypass))
   end
 
-  test "When there is an event it is sent to datadog", %{bypass: bypass} do
+  test "When there is a metric it is sent to datadog", %{bypass: bypass} do
 
     Bypass.expect bypass, fn conn ->
           conn = parse_body(conn)
@@ -18,10 +18,10 @@ defmodule Extatic.Reporters.Events.DatadogTest do
           assert conn.request_path == "/test_endpoint"
           assert conn.method=="POST"
 
-          assert conn.body_params["alert_type"] == "error"
-          assert conn.body_params["text"] == "sample_event_content"
-          assert conn.body_params["title"] == "sample_event"
-          assert conn.body_params["host"] == "test_hostname"
+          record =  conn.body_params["series"] |> List.first
+          assert record["metric"] == "test_metric"
+          assert record["points"] |> List.first |> List.last == "7.54"
+          assert record["host"] == "test_hostname"
           assert conn.query_params["api_key"] == "api12345678901234567890"
 
           Plug.Conn.resp(conn, 200, "")
@@ -29,7 +29,7 @@ defmodule Extatic.Reporters.Events.DatadogTest do
 
      request_state(bypass)
      |> add_event
-     |> Extatic.Reporters.Events.Datadog.send
+     |> Extatic.Reporters.Metrics.Datadog.send
   end
 
 
@@ -43,7 +43,7 @@ defmodule Extatic.Reporters.Events.DatadogTest do
   end
 
   defp add_event(state) do
-    Map.put(state, :events,[%{type: :error, title: "sample_event", content: "sample_event_content"}])
+    Map.put(state, :metrics,[%{name: "test_metric", value: "7.54", timestamp: nil}])
   end
 
   defp parse_body(conn) do
