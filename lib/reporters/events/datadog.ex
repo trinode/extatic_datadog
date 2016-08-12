@@ -16,12 +16,12 @@ defmodule Extatic.Reporters.Events.Datadog do
     body = build_request(current_event, config)
     headers = ["Content-Type": "application/json"]
 
-    HTTPoison.post url, body, headers, options(state)
+    HTTPoison.post url, body, headers, options(config)
     send_requests(tail, state)
   end
 
   def send_requests([], _state) do
-
+    nil
   end
 
   def build_request(event, config) do
@@ -46,8 +46,7 @@ defmodule Extatic.Reporters.Events.Datadog do
   end
 
 
-  defp options(config = %{config: %{username: username, password: password, host: host, port: port}}) do
-
+  defp options(%{proxy: %{username: username, password: password, host: host, port: port}}) do
     [
       proxy: "http://#{host}:#{port}",
       proxy_auth: {
@@ -57,8 +56,7 @@ defmodule Extatic.Reporters.Events.Datadog do
     ]
   end
 
-
-  defp options(config = %{config: %{host: host, port: port}}) do
+  defp options(%{proxy: %{host: host, port: port}}) do
     [
       proxy: "http://#{host}:#{port}"
     ]
@@ -68,13 +66,6 @@ defmodule Extatic.Reporters.Events.Datadog do
     []
   end
 
-  defp proxy_config(%{config: config}) do
-    proxy_config = Keyword.fetch(config, :proxy)
-    case proxy_config do
-       {:ok, config} -> config
-       _ -> %{}
-    end
-  end
 
   defp config do
     Application.fetch_env!(:extatic, :config)

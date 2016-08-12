@@ -16,7 +16,7 @@ defmodule Extatic.Reporters.Availability.Datadog do
     body = build_request(config)
     headers = ["Content-Type": "application/json"]
 
-    HTTPoison.post url, body, headers, options(state)
+    HTTPoison.post url, body, headers, options(config)
   end
 
   def build_request(config) do
@@ -38,13 +38,7 @@ defmodule Extatic.Reporters.Availability.Datadog do
   end
 
 
-
-  defp options(state = %{config: config}) do
-    options(proxy_config(state))
-  end
-
-
-  defp options(%{username: username, password: password, host: host, port: port}) do
+  defp options(%{proxy: %{username: username, password: password, host: host, port: port}}) do
     [
       proxy: "http://#{host}:#{port}",
       proxy_auth: {
@@ -54,7 +48,7 @@ defmodule Extatic.Reporters.Availability.Datadog do
     ]
   end
 
-  defp options(%{host: host, port: port}) do
+  defp options(%{proxy: %{host: host, port: port}}) do
     [
       proxy: "http://#{host}:#{port}"
     ]
@@ -64,16 +58,4 @@ defmodule Extatic.Reporters.Availability.Datadog do
     []
   end
 
-  defp proxy_config(%{config: config}) do
-    proxy_config = Map.fetch(config, :proxy)
-    case proxy_config do
-       {:ok, config} -> config
-       _ -> %{}
-    end
-  end
-
-
-  defp config do
-    Application.fetch_env!(:extatic, :config)
-  end
 end

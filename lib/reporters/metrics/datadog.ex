@@ -14,8 +14,9 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     url = build_url(config.url,config.api_key)
     body = build_request(metrics, config)
     headers = ["Content-Type": "application/json"]
+    request_options = options(config)
 
-    HTTPoison.post(url, body, headers, options(state))
+    HTTPoison.post(url, body, headers, request_options)
   end
 
   def send_request(state), do: nil
@@ -56,7 +57,7 @@ defmodule Extatic.Reporters.Metrics.Datadog do
 
 
 
-  defp options(config = %{config: %{username: username, password: password, host: host, port: port}}) do
+  defp options(%{proxy: %{username: username, password: password, host: host, port: port}}) do
     [
       proxy: "http://#{host}:#{port}",
       proxy_auth: {
@@ -66,7 +67,7 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     ]
   end
 
-  defp options(config = %{config: %{host: host, port: port}}) do
+  defp options(%{proxy: %{host: host, port: port}}) do
     [
       proxy: "http://#{host}:#{port}"
     ]
@@ -76,12 +77,5 @@ defmodule Extatic.Reporters.Metrics.Datadog do
     []
   end
 
-  defp proxy_config(%{config: config}) do
-    proxy_config = Keyword.fetch(config, :proxy)
-    case proxy_config do
-       {:ok, config} -> config
-       _ -> %{}
-    end
-  end
 
 end
